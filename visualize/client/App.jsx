@@ -21,7 +21,7 @@ class App extends Component {
   }
 
   componentDidMount() {
-    fetch('http://localhost:5000').then(res => res.json()).then(data => {
+    fetch('http://35.197.109.223:5000').then(res => res.json()).then(data => {
       data.forEach(d => {
         d.hypers = _.transform(d.hypers, (m,v,k) => {
           m[k.replace(/\./g, '_')] = typeof v == 'boolean' ? ~~v : v;
@@ -168,9 +168,17 @@ class App extends Component {
     let x = d3.scaleLinear()
       .rangeRound([0, width])
       .domain([0, d3.max(rewards, r => r.length)]);
+    let left = 0;
+    if (_.minBy(all_rewards, 'min')) {
+      left = _.minBy(all_rewards, 'min').min;
+    }
+    let right = 0;
+    if (_.maxBy(all_rewards, 'max')) {
+      right = _.maxBy(all_rewards, 'max').max;
+    }
     let y = d3.scaleLinear()
       .rangeRound([height, 0])
-      .domain([_.minBy(all_rewards, 'min').min, _.maxBy(all_rewards, 'max').max]);
+      .domain([left, right]);
 
     let axes = {
       x: d3.axisBottom(x),
@@ -276,7 +284,7 @@ class App extends Component {
 
   mountSignals = () => {
     const {id} = this.clickedDatum;
-    fetch(`http://localhost:5000/signals/${id}`).then(res => res.json()).then(this._mountSignals);
+    fetch(`http://35.197.109.223:5000/signals/${id}`).then(res => res.json()).then(this._mountSignals);
   };
 
   _mountSignals = (data) => {
